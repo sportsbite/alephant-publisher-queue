@@ -12,6 +12,12 @@ Static publishing to S3 based on SQS messages.
   - An SQS Queue (if no sequence id provided then `sequence_id` will be used)
   - A Dynamo DB table (optional, will attempt to create if can't be found)
 
+## Migrating from [Alephant::Publisher](https://github.com/BBC-News/alephant-publisher)
+
+* The namespace has changed from `Alephant::Publisher` to `Alephant::Publisher::Queue`.
+* You will need to run `bundle install`.
+* You will need to change how you require the gem (`require 'alephant/publisher/queue'`).
+
 ## Installation
 
 Add this line to your application's Gemfile:

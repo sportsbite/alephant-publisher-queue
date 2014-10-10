@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Alephant::Publisher::Processor do
+describe Alephant::Publisher::Queue::Processor do
 
   before(:each) do
-    allow_any_instance_of(Alephant::Publisher::Writer).to receive(:initialize)
-    allow_any_instance_of(Alephant::Publisher::Writer).to receive(:run!)
+    allow_any_instance_of(Alephant::Publisher::Queue::Writer).to receive(:initialize)
+    allow_any_instance_of(Alephant::Publisher::Queue::Writer).to receive(:run!)
   end
 
   describe "#consume(msg)" do

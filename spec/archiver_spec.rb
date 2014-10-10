@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Alephant::Publisher::SQSHelper::Archiver do
+describe Alephant::Publisher::Queue::SQSHelper::Archiver do
   describe "#see" do
     it "calls cache put with the correct params" do
       time_now = DateTime.parse("Feb 24 1981")
@@ -24,7 +24,7 @@ describe Alephant::Publisher::SQSHelper::Archiver do
         }
       )
 
-      instance = Alephant::Publisher::SQSHelper::Archiver.new(c, false)
+      instance = Alephant::Publisher::Queue::SQSHelper::Archiver.new(c, false)
 
       instance.see(m)
     end

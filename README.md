@@ -14,9 +14,10 @@ Static publishing to S3 based on SQS messages.
 
 ## Migrating from [Alephant::Publisher](https://github.com/BBC-News/alephant-publisher)
 
-* The namespace has changed from `Alephant::Publisher` to `Alephant::Publisher::Queue`.
-* You will need to run `bundle install`.
-* You will need to change how you require the gem (`require 'alephant/publisher/queue'`).
+1. Add the new gem in your Gemfile (`gem 'alephant-publisher-queue'`).
+2. Run `bundle install`.
+3. Require the new gem in your app (`require 'alephant/publisher/queue'`).
+4. Note that the namespace has changed from `Alephant::Publisher` to `Alephant::Publisher::Queue`.
 
 ## Installation
 

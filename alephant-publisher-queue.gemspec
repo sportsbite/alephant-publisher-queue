@@ -1,13 +1,13 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'alephant/publisher/version'
+require 'alephant/publisher/queue/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "alephant-publisher-queue"
-  spec.version       = Alephant::Publisher::VERSION
-  spec.authors       = ["Integralist"]
-  spec.email         = ["mark.mcdx@gmail.com"]
+  spec.version       = Alephant::Publisher::Queue::VERSION
+  spec.authors       = ["revett"]
+  spec.email         = ["charlierevett@gmail.com"]
   spec.summary       = "Static publishing to S3 based on SQS messages"
   spec.description   = "Static publishing to S3 based on SQS messages"
   spec.homepage      = "https://github.com/BBC-News/alephant-publisher-queue"

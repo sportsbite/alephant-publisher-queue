@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Alephant::Publisher::Writer do
+describe Alephant::Publisher::Queue::Writer do
   let(:opts) do
     {
       :lookup_table_name    => 'lookup_table_name',
@@ -57,7 +57,7 @@ describe Alephant::Publisher::Writer do
     end
 
     subject do
-      Alephant::Publisher::Writer.new(opts, msg)
+      Alephant::Publisher::Queue::Writer.new(opts, msg)
     end
 
     it "should write the correct lookup location" do

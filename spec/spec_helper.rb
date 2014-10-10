@@ -1,5 +1,5 @@
 require 'pry'
 
 require 'aws-sdk'
-require 'alephant/publisher'
+require 'alephant/publisher/queue'
 

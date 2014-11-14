@@ -35,7 +35,7 @@ module Alephant
         end
 
         def run!
-          batch? ? batch.sequence(message, &perform) : perform.call
+          batch? ? batch.validate(message, &perform) : perform.call
         end
 
         protected
@@ -45,7 +45,7 @@ module Alephant
         end
 
         def write(id, view)
-          seq_for(id).sequence(message) do
+          seq_for(id).validate(message) do
             store(id, view, location_for(id))
           end
         end

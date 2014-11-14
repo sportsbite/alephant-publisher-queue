@@ -22,7 +22,7 @@ module Alephant
         end
 
         def cache
-          Cache.new(
+          @cache ||= Cache.new(
             config[:s3_bucket_id],
             config[:s3_object_path]
           )

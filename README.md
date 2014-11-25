@@ -110,7 +110,20 @@ module MyApp
 
   def self.options
     Alephant::Publisher::Queue::Options.new.tap do |opts|
-      # TODO
+      opts.add_queue(
+        :aws_account_id => 'example',
+        :sqs_queue_name => 'test_queue'
+      )
+      opts.add_writer(
+        :keep_all_messages    => 'false',
+        :lookup_table_name    => 'lookup-dynamo-table',
+        :renderer_id          => 'renderer-id',
+        :s3_bucket_id         => 'bucket-id',
+        :s3_object_path       => 'example-s3-path',
+        :sequence_id_path     => '$.sequential_id',
+        :sequencer_table_name => 'sequence-dynamo-table',
+        :view_path            => 'path/to/views'
+      )
     end
   end
 end
@@ -129,6 +142,12 @@ Output:
 
 ```
 Hello World!
+```
+
+S3 Path:
+
+```
+S3 / bucket-id / example-s3-path / renderer-id / foo / 7e0c33c476b1089500d5f172102ec03e / 1 / output.html
 ```
 
 ## Preview Server

@@ -147,7 +147,7 @@ Hello World!
 S3 Path:
 
 ```
-S3 / bucket-id / example-s3-path / renderer-id / foo / 7e0c33c476b1089500d5f172102ec03e / 1 / output.html
+S3 / bucket-id / example-s3-path / renderer-id / foo / 7e0c33c476b1089500d5f172102ec03e / 1
 ```
 
 ## Preview Server

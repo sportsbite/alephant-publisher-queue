@@ -10,7 +10,7 @@ Static publishing to S3 based on SQS messages.
 - An AWS account, with:
   - S3 bucket.
   - SQS Queue.
-  - Dynamo DB table (optional, will attempt to create if not found).
+  - Dynamo DB table.
 
 ## Migrating from [Alephant::Publisher](https://github.com/BBC-News/alephant-publisher)
 
@@ -58,7 +58,7 @@ gem install alephant-publisher-queue
 
 Ensure you have a `config/aws.yml` in the format:
 
-```
+```yaml
 access_key_id: ACCESS_KEY_ID
 secret_access_key: SECRET_ACCESS_KEY
 ```
@@ -77,7 +77,7 @@ Provide a view and template:
 
 **foo.rb**
 
-```
+```ruby
 class Foo < Alephant::Views::Base
   def content
     @data['content']
@@ -93,7 +93,7 @@ end
 
 ## Usage
 
-```
+```ruby
 require "alephant/logger"
 require "alephant/publisher/queue"
 
@@ -131,7 +131,7 @@ end
 
 Add a message to your SQS queue, with the following format:
 
-```
+```json
 {
   "content": "Hello World!",
   "sequential_id": 1

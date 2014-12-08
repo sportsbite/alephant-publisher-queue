@@ -7,6 +7,8 @@ module Alephant
       class InvalidKeySpecifiedError < StandardError; end
 
       class Options
+        include Logger
+
         attr_reader :queue, :writer
 
         QUEUE_OPTS = [
@@ -47,6 +49,7 @@ module Alephant
             validate type, opts
             instance.merge! opts
           rescue Exception => e
+            logger.metric(:name => "PublisherQueueInvalidKeySpecifiedError", :unit => "Count", :value => 1)
             puts e.message
           end
         end

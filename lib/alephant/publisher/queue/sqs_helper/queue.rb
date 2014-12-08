@@ -36,6 +36,7 @@ module Alephant
           def archive(m)
             archiver.see(m) unless archiver.nil?
           rescue StandardError => e
+            logger.metric(:name => "PublisherQueueSQSHelperArchiveFailed", :unit => "Count", :value => 1)
             logger.warn("Queue#archive: archive failed (#{e.message})");
           end
 

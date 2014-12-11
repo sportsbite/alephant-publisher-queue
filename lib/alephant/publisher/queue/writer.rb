@@ -45,12 +45,14 @@ module Alephant
         end
 
         def write(id, view)
+          logger.info "Publisher::Queue::Writer#writes: id '#{id}', view '#{view}'"
           seq_for(id).validate(message) do
             store(id, view, location_for(id))
           end
         end
 
         def store(id, view, location)
+          logger.info "Publisher::Queue::Writer#store: location '#{location}', message.id '#{message.id}'"
           cache.put(location, view.render, view.content_type, :msg_id => message.id)
           lookup.write(id, options, seq_id, location)
         end
@@ -64,7 +66,7 @@ module Alephant
         end
 
         def batch?
-          !batch.nil?
+          !batch.nil?.tap { |b| logger.info "Publisher::Queue::Writer#batch?: #{b}" }
         end
 
         def seq_for(id)

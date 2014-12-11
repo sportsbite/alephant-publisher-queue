@@ -11,14 +11,14 @@ require 'json'
 module Alephant
   module Publisher
     module Queue
-      include Logger
-
       def self.create(opts = {}, processor = nil)
         processor ||= Processor.new(opts.writer)
         Publisher.new(opts, processor)
       end
 
       class Publisher
+        include Logger
+
         VISIBILITY_TIMEOUT = 60
         RECEIVE_WAIT_TIME  = 15
 
@@ -58,6 +58,7 @@ module Alephant
         end
 
         def sqs_queue_options
+          logger.info "Publisher::Queue::Publisher#sqs_queue_options: AWS Account ID '#{opts.queue[:aws_account_id]}'"
           opts.queue[:aws_account_id].nil? ? {} : { :queue_owner_aws_account_id => opts.queue[:aws_account_id] }
         end
 
@@ -69,4 +70,3 @@ module Alephant
     end
   end
 end
-

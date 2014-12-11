@@ -11,14 +11,14 @@ require 'json'
 module Alephant
   module Publisher
     module Queue
-      include Logger
-
       def self.create(opts = {}, processor = nil)
         processor ||= Processor.new(opts.writer)
         Publisher.new(opts, processor)
       end
 
       class Publisher
+        include Logger
+
         VISIBILITY_TIMEOUT = 60
         RECEIVE_WAIT_TIME  = 15
 
@@ -70,4 +70,3 @@ module Alephant
     end
   end
 end
-

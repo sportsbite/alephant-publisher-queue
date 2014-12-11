@@ -1,3 +1,4 @@
+require 'alephant/logger'
 require 'date'
 
 module Alephant
@@ -5,6 +6,8 @@ module Alephant
     module Queue
       module SQSHelper
         class Archiver
+          include Logger
+
           attr_reader :cache, :async
 
           def initialize(cache, async = true)
@@ -24,6 +27,7 @@ module Alephant
           end
 
           def store(m)
+            logger.info "Publisher::Queue::SQSHelper::Archiver#store: '#{m.body}' at 'archive/#{date_key}/#{m.id}'"
             cache.put("archive/#{date_key}/#{m.id}", m.body, meta_for(m))
           end
 

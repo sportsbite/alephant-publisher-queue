@@ -6,6 +6,7 @@ require 'alephant/logger'
 require 'alephant/sequencer'
 require 'alephant/support/parser'
 require 'alephant/renderer'
+require "alephant/renderer/response"
 
 module Alephant
   module Publisher
@@ -53,8 +54,12 @@ module Alephant
 
         def store(id, view, location)
           logger.info "Publisher::Queue::Writer#store: location '#{location}', message.id '#{message.id}'"
-          cache.put(location, view.render, view.content_type, :msg_id => message.id)
+          cache.put(location, json_response(view.render), view.content_type, :msg_id => message.id)
           lookup.write(id, options, seq_id, location)
+        end
+
+        def json_response(content)
+          Alephant::Renderer::Response.new(content).to_json
         end
 
         def location_for(id)

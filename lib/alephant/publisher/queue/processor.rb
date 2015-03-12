@@ -17,7 +17,6 @@ module Alephant
           unless msg.nil?
             write msg
             msg.delete
-            logger.metric(:name => "PublisherQueueProcessorMessagesDeleted", :unit => "Count", :value => 1)
           end
         end
 

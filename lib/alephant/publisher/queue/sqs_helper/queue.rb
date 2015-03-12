@@ -29,6 +29,7 @@ module Alephant
           private
 
           def process(m)
+            logger.metric(:name => "PublisherQueueSQSHelperMessagesReceived", :unit => "Count", :value => 1)
             logger.info("Queue#message: received #{m.id}")
             archive m
           end

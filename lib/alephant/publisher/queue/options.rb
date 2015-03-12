@@ -49,7 +49,8 @@ module Alephant
             validate type, opts
             instance.merge! opts
           rescue Exception => e
-            logger.warn "Publisher::Queue::Options#validate: '#{e.message}'"
+            logger.metric(:name => "PublisherQueueOptionsInvalidKeySpecified", :unit => "Count", :value => 1)
+            logger.error "Publisher::Queue::Options#validate: '#{e.message}'"
             puts e.message
           end
         end

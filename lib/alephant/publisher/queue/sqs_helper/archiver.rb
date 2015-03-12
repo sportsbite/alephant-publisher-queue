@@ -24,9 +24,11 @@ module Alephant
 
           def async_store(m)
             Thread.new { store(m) }
+            logger.metric(:name => "PublisherQueueSQSHelperAsynchronouslyArchivedData", :unit => "Count", :value => 1)
           end
 
           def store(m)
+            logger.metric(:name => "PublisherQueueSQSHelperSynchronouslyArchivedData", :unit => "Count", :value => 1)
             logger.info "Publisher::Queue::SQSHelper::Archiver#store: '#{m.body}' at 'archive/#{date_key}/#{m.id}'"
             cache.put("archive/#{date_key}/#{m.id}", m.body, meta_for(m))
           end

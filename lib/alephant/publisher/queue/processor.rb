@@ -5,8 +5,6 @@ module Alephant
   module Publisher
     module Queue
       class Processor < BaseProcessor
-        include Logger
-
         attr_reader :writer_config
 
         def initialize(writer_config = {})

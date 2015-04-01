@@ -47,13 +47,13 @@ module Alephant
         def write(id, view)
           logger.info "Publisher::Queue::Writer#writes: id '#{id}', view '#{view}'"
           seq_for(id).validate(message) do
-            store(id, view, location_for(id))
+            store(id, view, location_for(id), :msg_id => message.id)
           end
         end
 
-        def store(id, view, location)
+        def store(id, view, location, options = {})
           logger.info "Publisher::Queue::Writer#store: location '#{location}', message.id '#{message.id}'"
-          cache.put(location, view.render, view.content_type, :msg_id => message.id)
+          cache.put(location, view.render, view.content_type, options)
           lookup.write(id, options, seq_id, location)
         end
 

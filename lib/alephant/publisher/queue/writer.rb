@@ -51,9 +51,9 @@ module Alephant
           end
         end
 
-        def store(id, view, location, options = {})
+        def store(id, view, location, storage_opts = {})
           logger.info "Publisher::Queue::Writer#store: location '#{location}', message.id '#{message.id}'"
-          cache.put(location, view.render, view.content_type, options)
+          cache.put(location, view.render, view.content_type, storage_opts)
           lookup.write(id, options, seq_id, location)
         end
 

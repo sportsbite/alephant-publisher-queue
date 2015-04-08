@@ -30,7 +30,7 @@ module Alephant
 
           @queue = SQSHelper::Queue.new(
             aws_queue,
-            archiver,
+            archiver(opts.queue),
             opts.queue[:visibility_timeout] || VISIBILITY_TIMEOUT,
             opts.queue[:receive_wait_time]  || RECEIVE_WAIT_TIME,
           )
@@ -42,8 +42,8 @@ module Alephant
 
         private
 
-        def archiver
-          SQSHelper::Archiver.new(archive_cache)
+        def archiver(opts)
+          opts.fetch(:archive_messages, true) ? SQSHelper::Archiver.new(archive_cache) : nil
         end
 
         def archive_cache

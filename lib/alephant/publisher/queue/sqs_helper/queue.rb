@@ -29,7 +29,7 @@ module Alephant
           private
 
           def process(m)
-            logger.metric("MessagesReceived")
+            logger.metric "MessagesReceived"
             logger.info("Queue#message: received #{m.id}")
             archive m
           end
@@ -37,7 +37,7 @@ module Alephant
           def archive(m)
             archiver.see(m) unless archiver.nil?
           rescue StandardError => e
-            logger.metric("ArchiveFailed")
+            logger.metric "ArchiveFailed"
             logger.warn("Queue#archive: archive failed (#{e.message})");
           end
 

@@ -29,10 +29,7 @@ module Alephant
           private
 
           def process(m)
-            logger.metric(
-              "MessagesReceived",
-              opts[:dimensions].merge(:function => "process")
-            )
+            logger.metric("MessagesReceived")
             logger.info("Queue#message: received #{m.id}")
             archive m
           end
@@ -40,10 +37,7 @@ module Alephant
           def archive(m)
             archiver.see(m) unless archiver.nil?
           rescue StandardError => e
-            logger.metric(
-              "ArchiveFailed",
-              opts[:dimensions].merge(:function => "archive")
-            )
+            logger.metric("ArchiveFailed")
             logger.warn("Queue#archive: archive failed (#{e.message})");
           end
 
@@ -52,15 +46,6 @@ module Alephant
               :visibility_timeout => timeout,
               :wait_time_seconds  => wait_time
             })
-          end
-
-          def opts
-            {
-              :dimensions => {
-                :module   => "PublisherQueueSQSHelper",
-                :class    => "Queue"
-              }
-            }
           end
         end
       end

@@ -49,20 +49,10 @@ module Alephant
             validate type, opts
             instance.merge! opts
           rescue Exception => e
-            logger.metric("PublisherQueueOptionsInvalidKeySpecified", opts)
+            logger.metric("QueueOptionsInvalidKeySpecified")
             logger.error "Publisher::Queue::Options#validate: '#{e.message}'"
             puts e.message
           end
-        end
-
-        def opts
-          {
-            :dimensions => {
-              :module   => "AlephantPublisherQueue",
-              :class    => "Options",
-              :function => "execute"
-            }
-          }
         end
 
         def validate(type, opts)

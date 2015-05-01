@@ -15,7 +15,9 @@ module Alephant
           :receive_wait_time,
           :sqs_queue_name,
           :visibility_timeout,
-          :aws_account_id
+          :aws_account_id,
+          :log_archive_message,
+          :async_store
         ]
 
         WRITER_OPTS = [

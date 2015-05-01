@@ -43,7 +43,17 @@ module Alephant
         private
 
         def archiver
-          SQSHelper::Archiver.new(archive_cache)
+          SQSHelper::Archiver.new(archive_cache, archiver_opts)
+        end
+
+        def archiver_opts
+          options = {
+            :log_archive_message => true,
+            :async_store         => true
+          }
+          options.each do |key, value|
+            options[key] = opts.queue[key] == "true" if opts.queue.has_key? key
+          end
         end
 
         def archive_cache

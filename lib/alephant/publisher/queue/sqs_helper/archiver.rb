@@ -1,5 +1,6 @@
-require 'alephant/logger'
-require 'date'
+require "alephant/logger"
+require "date"
+require "json"
 
 module Alephant
   module Publisher
@@ -8,41 +9,79 @@ module Alephant
         class Archiver
           include Logger
 
-          attr_reader :cache, :async
+          attr_reader :cache, :async, :log_message_body
 
-          def initialize(cache, async = true)
-            @async = async
-            @cache = cache
+          def initialize(cache, opts)
+            @cache            = cache
+            @async            = opts[:async_store]
+            @log_message_body = opts[:log_archive_message]
           end
 
           def see(message)
             return if message.nil?
-            message.tap { |m| async ? async_store(m) : store(m) }
+            message.tap do |m|
+              async ? async_store(m) : sync_store(m)
+            end
           end
 
           private
 
-          def async_store(m)
-            Thread.new { store(m) }
-            logger.metric "AsynchronouslyArchivedData"
+          def async_store(message)
+            Thread.new do
+              logger.metric "AsynchronouslyArchivedData"
+              store message
+            end
           end
 
-          def store(m)
+          def sync_store(message)
             logger.metric "SynchronouslyArchivedData"
-            logger.info "Publisher::Queue::SQSHelper::Archiver#store: '#{m.body}' at 'archive/#{date_key}/#{m.id}'"
-            cache.put("archive/#{date_key}/#{m.id}", m.body, meta_for(m))
+            store message
+          end
+
+          def store(message)
+            logger.info log_message(message)
+            store_item message
+          end
+
+          def store_item(message)
+            cache.put(
+              cache_key(message.id),
+              message.body,
+              meta_for(message)
+            )
+          end
+
+          def cache_key(id)
+            "archive/#{date_key}/#{id}"
+          end
+
+          def log_message_parts(id)
+            [
+              "#{self.class}#store:",
+              "'#archive/#{date_key}/#{id}'"
+            ]
+          end
+
+          def log_message(m)
+            log_message_parts(m.id).tap do |parts|
+              parts << "(#{encoded_body m.body})" if log_message_body
+            end.join(" ")
+          end
+
+          def encoded_body(message)
+            JSON.generate message.split("\n")
           end
 
           def date_key
-            DateTime.now.strftime('%d-%m-%Y_%H')
+            DateTime.now.strftime("%d-%m-%Y_%H")
           end
 
           def meta_for(m)
             {
-              :id                => m.id,
-              :md5               => m.md5,
-              :logged_at         => DateTime.now.to_s,
-              :queue             => m.queue.url,
+              :id        => m.id,
+              :md5       => m.md5,
+              :logged_at => DateTime.now.to_s,
+              :queue     => m.queue.url
             }
           end
         end
@@ -50,4 +89,3 @@ module Alephant
     end
   end
 end
-

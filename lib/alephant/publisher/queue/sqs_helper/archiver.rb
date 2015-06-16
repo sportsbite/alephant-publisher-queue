@@ -39,8 +39,13 @@ module Alephant
           end
 
           def store(message)
-            logger.info log_message(message)
-            store_item message
+            store_item(message).tap do
+              logger.info(
+                "event"  => "MessageStored",
+                "messageBody" => body_for(message),
+                "method" => "#{self.class}#store"
+              )
+            end
           end
 
           def store_item(message)
@@ -62,10 +67,8 @@ module Alephant
             ]
           end
 
-          def log_message(m)
-            log_message_parts(m.id).tap do |parts|
-              parts << "(#{encoded_body m.body})" if log_message_body
-            end.join(" ")
+          def body_for(message)
+             log_message_body ? encoded_body(message.body) : "No message body available"
           end
 
           def encoded_body(message)

@@ -1,5 +1,10 @@
 require 'aws-sdk'
 require 'yaml'
+require 'alephant/logger'
+require 'alephant/logger/json'
+
+json_driver = Alephant::Logger::JSON.new ENV["APP_LOG_LOCATION"]
+Alephant::Logger.setup json_driver
 
 config_file = 'config/aws.yaml'
 

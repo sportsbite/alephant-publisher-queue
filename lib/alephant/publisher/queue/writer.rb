@@ -91,13 +91,7 @@ module Alephant
         end
 
         def batch?
-          !batch.nil?.tap do |b|
-            logger.info(
-              "event"      => "BatchRequestCheck",
-              "batchCount" => b,
-              "method"     => "#{self.class}#batch?"
-            )
-          end
+          !batch.nil?
         end
 
         def seq_for(id)

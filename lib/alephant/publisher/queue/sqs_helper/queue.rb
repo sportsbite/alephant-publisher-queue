@@ -1,5 +1,5 @@
-require 'aws-sdk'
-require 'alephant/logger'
+require "aws-sdk"
+require "alephant/logger"
 
 module Alephant
   module Publisher
@@ -19,7 +19,13 @@ module Alephant
             @timeout   = timeout
             @wait_time = wait_time
 
-            logger.debug("Queue#initialize: reading from #{queue.url}")
+            logger.info(
+              "event"    => "QueueConfigured",
+              "queueUrl" => queue.url,
+              "archiver" => archiver,
+              "timeout"  => timeout,
+              "method"   => "#{self.class}#initialize"
+            )
           end
 
           def message
@@ -30,7 +36,11 @@ module Alephant
 
           def process(m)
             logger.metric "MessagesReceived"
-            logger.info("Queue#message: received #{m.id}")
+            logger.info(
+              "event"     => "QueueMessageReceived",
+              "messageId" => m.id,
+              "method"    => "#{self.class}#process"
+            )
             archive m
           end
 
@@ -38,7 +48,13 @@ module Alephant
             archiver.see(m) unless archiver.nil?
           rescue StandardError => e
             logger.metric "ArchiveFailed"
-            logger.warn("Queue#archive: archive failed (#{e.message})");
+            logger.error(
+              "event"     => "MessageArchiveFailed",
+              "class"     => e.class,
+              "message"   => e.message,
+              "backtrace" => e.backtrace.join.to_s,
+              "method"    => "#{self.class}#archive"
+            )
           end
 
           def receive

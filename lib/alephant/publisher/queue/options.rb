@@ -1,5 +1,5 @@
-require 'aws-sdk'
-require 'alephant/logger'
+require "aws-sdk"
+require "alephant/logger"
 
 module Alephant
   module Publisher
@@ -52,7 +52,13 @@ module Alephant
             instance.merge! opts
           rescue Exception => e
             logger.metric "QueueOptionsInvalidKeySpecified"
-            logger.error "Publisher::Queue::Options#validate: '#{e.message}'"
+            logger.error(
+              "event"     => "QueueOptionsKeyInvalid",
+              "class"     => e.class,
+              "message"   => e.message,
+              "backtrace" => e.backtrace.join.to_s,
+              "method"    => "#{self.class}#validate"
+            )
             puts e.message
           end
         end

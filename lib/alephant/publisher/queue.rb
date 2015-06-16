@@ -1,12 +1,12 @@
-require_relative 'env'
+require_relative "env"
 
-require 'alephant/publisher/queue/version'
-require 'alephant/publisher/queue/options'
-require 'alephant/publisher/queue/sqs_helper/queue'
-require 'alephant/publisher/queue/sqs_helper/archiver'
-require 'alephant/logger'
-require 'alephant/publisher/queue/processor'
-require 'json'
+require "alephant/publisher/queue/version"
+require "alephant/publisher/queue/options"
+require "alephant/publisher/queue/sqs_helper/queue"
+require "alephant/publisher/queue/sqs_helper/archiver"
+require "alephant/logger"
+require "alephant/publisher/queue/processor"
+require "json"
 
 module Alephant
   module Publisher
@@ -68,8 +68,13 @@ module Alephant
         end
 
         def sqs_queue_options
-          logger.info "Publisher::Queue::Publisher#sqs_queue_options: AWS Account ID '#{opts.queue[:aws_account_id]}'"
-          opts.queue[:aws_account_id].nil? ? {} : { :queue_owner_aws_account_id => opts.queue[:aws_account_id] }
+          (opts.queue[:aws_account_id].nil? ? {} : { :queue_owner_aws_account_id => opts.queue[:aws_account_id] }).tap do |ops|
+            logger.info(
+              "event"   => "SQSQueueOptionsConfigured",
+              "options" => ops,
+              "method"  => "#{self.class}#sqs_queue_options"
+            )
+          end
         end
 
         def aws_queue

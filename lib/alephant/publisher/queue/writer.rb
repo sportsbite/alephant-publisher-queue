@@ -1,11 +1,11 @@
-require 'crimp'
+require "crimp"
 
-require 'alephant/cache'
-require 'alephant/lookup'
-require 'alephant/logger'
-require 'alephant/sequencer'
-require 'alephant/support/parser'
-require 'alephant/renderer'
+require "alephant/cache"
+require "alephant/lookup"
+require "alephant/logger"
+require "alephant/sequencer"
+require "alephant/support/parser"
+require "alephant/renderer"
 
 module Alephant
   module Publisher
@@ -45,16 +45,42 @@ module Alephant
         end
 
         def write(id, view)
-          logger.info "Publisher::Queue::Writer#writes: id '#{id}', view '#{view}'"
           seq_for(id).validate(message) do
             store(id, view, location_for(id), :msg_id => message.id)
+          end.tap do
+            logger.info(
+              "event"     => "MessageWritten",
+              "id"        => id,
+              "view"      => view,
+              "method"    => "#{self.class}#write"
+            )
           end
         end
 
         def store(id, view, location, storage_opts = {})
-          logger.info "Publisher::Queue::Writer#store: location '#{location}', message.id '#{message.id}'"
-          cache.put(location, view.render, view.content_type, storage_opts)
-          lookup.write(id, options, seq_id, location)
+          render = view.render
+          cache.put(location, render, view.content_type, storage_opts).tap do
+            logger.info(
+              "event"          => "MessageStored",
+              "location"       => location,
+              "view"           => view,
+              "render"         => render.force_encoding("utf-8"),
+              "contentType"    => view.content_type,
+              "storageOptions" => storage_opts,
+              "messageId"      => message.id,
+              "method"         => "#{self.class}#store"
+            )
+          end
+          lookup.write(id, options, seq_id, location).tap do
+            logger.info(
+              "event"      => "LookupLocationUpdated",
+              "id"         => id,
+              "options"    => options,
+              "sequenceId" => seq_id,
+              "location"   => location,
+              "method"     => "#{self.class}#write"
+            )
+          end
         end
 
         def location_for(id)
@@ -66,7 +92,7 @@ module Alephant
         end
 
         def batch?
-          !batch.nil?.tap { |b| logger.info "Publisher::Queue::Writer#batch?: #{b}" }
+          !batch.nil?
         end
 
         def seq_for(id)
@@ -74,7 +100,7 @@ module Alephant
             config[:sequencer_table_name],
             seq_key_from(id),
             config[:sequence_id_path],
-            config[:keep_all_messages] == 'true'
+            config[:keep_all_messages] == "true"
           )
         end
 

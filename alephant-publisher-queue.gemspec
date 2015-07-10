@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'alephant-support'
   spec.add_runtime_dependency 'alephant-sequencer'
   spec.add_runtime_dependency 'alephant-cache'
-  spec.add_runtime_dependency 'alephant-logger', "1.2.1"
+  spec.add_runtime_dependency 'alephant-logger', "3.0.1"
   spec.add_runtime_dependency 'alephant-lookup'
   spec.add_runtime_dependency 'alephant-renderer'
 end

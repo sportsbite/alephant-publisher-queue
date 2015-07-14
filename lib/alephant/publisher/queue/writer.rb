@@ -63,7 +63,8 @@ module Alephant
             logger.info(
               "event"          => "MessageStored",
               "location"       => location,
-              "view"           => render,
+              "view"           => view,
+              "render"         => render.force_encoding("utf-8"),
               "contentType"    => view.content_type,
               "storageOptions" => storage_opts,
               "messageId"      => message.id,

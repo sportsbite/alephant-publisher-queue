@@ -24,18 +24,11 @@ describe Alephant::Publisher::Queue::Writer do
       )
 
     allow_any_instance_of(Alephant::Sequencer::SequenceTable).to receive(:create)
-
-    allow_any_instance_of(Alephant::Sequencer::Sequencer).to receive(:sequencer_id_from)
-      .and_return(1)
-
+    allow_any_instance_of(Alephant::Sequencer::Sequencer).to receive(:sequencer_id_from).and_return(1)
     allow_any_instance_of(Alephant::Sequencer::Sequencer).to receive(:set_last_seen)
-
     allow_any_instance_of(Alephant::Sequencer::Sequencer).to receive(:get_last_seen)
-
     allow_any_instance_of(Alephant::Lookup::LookupTable).to receive(:create)
-
     allow_any_instance_of(Alephant::Lookup::LookupTable).to receive(:table_name)
-
     allow_any_instance_of(Alephant::Renderer::Renderer).to receive(:views).and_return({})
   end
 
@@ -43,9 +36,9 @@ describe Alephant::Publisher::Queue::Writer do
     let(:msg) do
       data = {
         "sequence" => "1",
-        "vary" => "foo"
+        "vary"     => "foo"
       }
-      Struct.new(:body,:id).new(data.to_json,'id')
+      Struct.new(:body, :id).new(data.to_json, 'id')
     end
 
     let(:expected_location) do
@@ -66,7 +59,7 @@ describe Alephant::Publisher::Queue::Writer do
       allow_any_instance_of(Alephant::Lookup::LookupHelper).to receive(:write)
         .with(
           "component_id",
-          {:variant=>"foo"},
+          { :variant => "foo" },
           1,
           expected_location
         )

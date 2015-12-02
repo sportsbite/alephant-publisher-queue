@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Alephant::Publisher::Queue::SQSHelper::Archiver do
   let (:cache) { instance_double("Alephant::Cache", :put => nil) }
@@ -34,12 +34,10 @@ describe Alephant::Publisher::Queue::SQSHelper::Archiver do
         expect(cache).to receive(:put).with(
           "archive/#{time_now.strftime('%d-%m-%Y_%H')}/id",
           message.body,
-          {
-            :id        => message.id,
-            :md5       => message.md5,
-            :logged_at => time_now.to_s,
-            :queue     => message.queue.url
-          }
+          :id        => message.id,
+          :md5       => message.md5,
+          :logged_at => time_now.to_s,
+          :queue     => message.queue.url
         )
         subject.see(message)
       end
@@ -66,4 +64,3 @@ describe Alephant::Publisher::Queue::SQSHelper::Archiver do
     end
   end
 end
-

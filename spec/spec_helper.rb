@@ -1,5 +1,4 @@
-require 'pry'
+require "pry"
 
-require 'aws-sdk'
-require 'alephant/publisher/queue'
-
+require "aws-sdk"
+require "alephant/publisher/queue"

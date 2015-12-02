@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Alephant::Publisher::Queue::SQSHelper::Queue do
   describe "#message" do
@@ -27,4 +27,3 @@ describe Alephant::Publisher::Queue::SQSHelper::Queue do
     end
   end
 end
-

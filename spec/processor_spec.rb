@@ -1,19 +1,21 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Alephant::Publisher::Queue::Processor do
-
   before(:each) do
-    allow_any_instance_of(Alephant::Publisher::Queue::Writer).to receive(:initialize)
-    allow_any_instance_of(Alephant::Publisher::Queue::Writer).to receive(:run!)
+    allow_any_instance_of(
+      Alephant::Publisher::Queue::Writer
+    ).to receive(:initialize)
+
+    allow_any_instance_of(
+      Alephant::Publisher::Queue::Writer
+    ).to receive(:run!)
   end
 
   describe "#consume(msg)" do
     it "Consume the message and deletes it" do
-
-      msg = double('AWS::SQS::ReceivedMessage', :delete => nil)
+      msg = double("AWS::SQS::ReceivedMessage", :delete => nil)
       expect(msg).to receive(:delete)
       subject.consume(msg)
-
     end
   end
 end

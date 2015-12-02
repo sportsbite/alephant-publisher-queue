@@ -35,7 +35,7 @@ module Alephant
         end
 
         def run!
-          batch? ? batch.validate(message, &perform) : perform.call
+          batch.validate(message, &perform)
         end
 
         protected
@@ -88,11 +88,7 @@ module Alephant
         end
 
         def batch
-          @batch ||= (views.count > 1) ? seq_for(config[:renderer_id]) : nil
-        end
-
-        def batch?
-          !batch.nil?
+          seq_for(config[:renderer_id])
         end
 
         def seq_for(id)

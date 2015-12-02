@@ -20,3 +20,4 @@ tmp
 /config/*.yml
 /components
 *.swp
+app.log

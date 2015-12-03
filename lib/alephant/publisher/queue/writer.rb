@@ -48,7 +48,12 @@ module Alephant
 
         def write(component, view)
           seq_for(component).validate(message) do
-            store(component, view, location_for(component), :msg_id => message.id)
+            store(
+              component,
+              view,
+              location_for(component),
+              :msg_id => message.id
+            )
           end.tap do
             logger.info(
               "event"     => "MessageWritten",
@@ -111,7 +116,9 @@ module Alephant
         end
 
         def seq_id
-          @seq_id ||= Sequencer::Sequencer.sequence_id_from(message, config[:sequence_id_path])
+          @seq_id ||= Sequencer::Sequencer.sequence_id_from(
+            message, config[:sequence_id_path]
+          )
         end
 
         def views

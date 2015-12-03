@@ -51,7 +51,7 @@ module Alephant
             :log_archive_message => true,
             :async_store         => true
           }
-          options.each do |key, value|
+          options.each do |key, _value|
             options[key] = opts.queue[key] == "true" if opts.queue.has_key? key
           end
         end
@@ -68,7 +68,7 @@ module Alephant
         end
 
         def sqs_queue_options
-          (opts.queue[:aws_account_id].nil? ? {} : { :queue_owner_aws_account_id => opts.queue[:aws_account_id] }).tap do |ops|
+          (opts.queue[:aws_account_id].nil? ? {} : fallback).tap do |ops|
             logger.info(
               "event"   => "SQSQueueOptionsConfigured",
               "options" => ops,
@@ -77,8 +77,16 @@ module Alephant
           end
         end
 
+        def fallback
+          {
+            :queue_owner_aws_account_id => opts.queue[:aws_account_id]
+          }
+        end
+
         def aws_queue
-          queue_url = sqs_client.queues.url_for(opts.queue[:sqs_queue_name], sqs_queue_options)
+          queue_url = sqs_client.queues.url_for(
+            opts.queue[:sqs_queue_name], sqs_queue_options
+          )
           sqs_client.queues[queue_url]
         end
       end

@@ -50,7 +50,7 @@ module Alephant
           begin
             validate type, opts
             instance.merge! opts
-          rescue Exception => e
+          rescue InvalidKeySpecifiedError => e
             logger.metric "QueueOptionsInvalidKeySpecified"
             logger.error(
               "event"     => "QueueOptionsKeyInvalid",
@@ -64,8 +64,10 @@ module Alephant
         end
 
         def validate(type, opts)
-          opts.each do |key, value|
-            raise InvalidKeySpecifiedError, "The key '#{key}' is invalid" unless type.include? key.to_sym
+          opts.each do |key, _value|
+            unless type.include? key.to_sym
+              raise InvalidKeySpecifiedError, "The key '#{key}' is invalid"
+            end
           end
         end
       end

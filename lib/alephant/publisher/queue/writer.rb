@@ -35,12 +35,12 @@ module Alephant
         end
 
         def run!
-          batch.validate(message, &perform)
+          seq_for(config[:renderer_id]).validate(message, &process_components)
         end
 
         protected
 
-        def perform
+        def process_components
           Proc.new { views.each { |id, view| write(id, view) } }
         end
 
@@ -85,10 +85,6 @@ module Alephant
 
         def location_for(id)
           "#{config[:renderer_id]}/#{id}/#{opt_hash}/#{seq_id}"
-        end
-
-        def batch
-          seq_for(config[:renderer_id])
         end
 
         def seq_for(id)

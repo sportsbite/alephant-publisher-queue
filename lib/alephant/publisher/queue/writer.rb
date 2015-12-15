@@ -41,23 +41,30 @@ module Alephant
         protected
 
         def process_components
-          Proc.new { views.each { |id, view| write(id, view) } }
+          Proc.new do
+            views.each { |component, view| write(component, view) }
+          end
         end
 
-        def write(id, view)
-          seq_for(id).validate(message) do
-            store(id, view, location_for(id), :msg_id => message.id)
+        def write(component, view)
+          seq_for(component).validate(message) do
+            store(
+              component,
+              view,
+              location_for(component),
+              :msg_id => message.id
+            )
           end.tap do
             logger.info(
               "event"     => "MessageWritten",
-              "id"        => id,
+              "component" => component,
               "view"      => view,
               "method"    => "#{self.class}#write"
             )
           end
         end
 
-        def store(id, view, location, storage_opts = {})
+        def store(component, view, location, storage_opts = {})
           render = view.render
           cache.put(location, render, view.content_type, storage_opts).tap do
             logger.info(
@@ -71,10 +78,10 @@ module Alephant
               "method"         => "#{self.class}#store"
             )
           end
-          lookup.write(id, options, seq_id, location).tap do
+          lookup.write(component, options, seq_id, location).tap do
             logger.info(
               "event"      => "LookupLocationUpdated",
-              "id"         => id,
+              "component"  => component,
               "options"    => options,
               "sequenceId" => seq_id,
               "location"   => location,
@@ -83,8 +90,8 @@ module Alephant
           end
         end
 
-        def location_for(id)
-          "#{config[:renderer_id]}/#{id}/#{opt_hash}/#{seq_id}"
+        def location_for(component)
+          "#{config[:renderer_id]}/#{component}/#{opt_hash}/#{seq_id}"
         end
 
         def seq_for(id)
@@ -101,7 +108,9 @@ module Alephant
         end
 
         def seq_id
-          @seq_id ||= Sequencer::Sequencer.sequence_id_from(message, config[:sequence_id_path])
+          @seq_id ||= Sequencer::Sequencer.sequence_id_from(
+            message, config[:sequence_id_path]
+          )
         end
 
         def views

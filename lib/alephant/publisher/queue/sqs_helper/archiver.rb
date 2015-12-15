@@ -68,7 +68,7 @@ module Alephant
           end
 
           def body_for(message)
-             log_message_body ? message.body : "No message body available"
+            log_message_body ? message.body : "No message body available"
           end
 
           def date_key

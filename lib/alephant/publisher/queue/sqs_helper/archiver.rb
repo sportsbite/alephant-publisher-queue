@@ -50,11 +50,11 @@ module Alephant
           end
 
           def newsbeat_uri?(msg_body)
-            jsb = JSON.parse(msg_body)
-            msg = JSON.parse(jsb["Message"]) if jsb["Message"]
+            jsb = ::JSON.parse(msg_body)
+            msg = ::JSON.parse(jsb["Message"]) if jsb["Message"]
 
             true if verify_message_content msg
-          rescue JSON::ParserError
+          rescue ::JSON::ParserError
             false
           end
 

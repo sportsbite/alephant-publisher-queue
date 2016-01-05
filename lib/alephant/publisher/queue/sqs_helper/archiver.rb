@@ -39,13 +39,27 @@ module Alephant
           end
 
           def store(message)
+            msg_body = body_for(message)
             store_item(message).tap do
               logger.info(
                 "event"       => "MessageStored",
-                "messageBody" => body_for(message),
+                "messageBody" => msg_body,
                 "method"      => "#{self.class}#store"
-              )
+              ) if newsbeat_uri? msg_body
             end
+          end
+
+          def newsbeat_uri?(msg_body)
+            jsb = ::JSON.parse(msg_body)
+            msg = ::JSON.parse(jsb["Message"]) if jsb["Message"]
+
+            true if verify_message_content msg
+          rescue ::JSON::ParserError
+            false
+          end
+
+          def verify_message_content(msg)
+            !msg.nil? && msg["uri"] && msg["uri"] =~ /content\/asset\/newsbeat/
           end
 
           def store_item(message)
@@ -68,7 +82,7 @@ module Alephant
           end
 
           def body_for(message)
-            log_message_body ? message.body : "No message body available"
+            log_message_body ? message.body : '{ "Message": "No message body available" }'
           end
 
           def date_key

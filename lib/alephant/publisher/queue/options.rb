@@ -17,6 +17,7 @@ module Alephant
           :visibility_timeout,
           :aws_account_id,
           :log_archive_message,
+          :log_validator,
           :async_store
         ]
 

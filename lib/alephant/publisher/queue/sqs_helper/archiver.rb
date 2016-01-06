@@ -9,12 +9,13 @@ module Alephant
         class Archiver
           include Logger
 
-          attr_reader :cache, :async, :log_message_body
+          attr_reader :cache, :async, :log_message_body, :log_validator
 
           def initialize(cache, opts)
             @cache            = cache
             @async            = opts[:async_store]
             @log_message_body = opts[:log_archive_message]
+            @log_validator    = opts[:log_validator] || -> _ { true }
           end
 
           def see(message)
@@ -45,21 +46,8 @@ module Alephant
                 "event"       => "MessageStored",
                 "messageBody" => msg_body,
                 "method"      => "#{self.class}#store"
-              ) if newsbeat_uri? msg_body
+              ) if log_validator.(msg_body)
             end
-          end
-
-          def newsbeat_uri?(msg_body)
-            jsb = ::JSON.parse(msg_body)
-            msg = ::JSON.parse(jsb["Message"]) if jsb["Message"]
-
-            true if verify_message_content msg
-          rescue ::JSON::ParserError
-            false
-          end
-
-          def verify_message_content(msg)
-            !msg.nil? && msg["uri"] && msg["uri"] =~ /content\/asset\/newsbeat/
           end
 
           def store_item(message)

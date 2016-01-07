@@ -48,8 +48,9 @@ module Alephant
 
         def archiver_opts
           options = {
+            :async_store         => true,
             :log_archive_message => true,
-            :async_store         => true
+            :log_validator       => opts.queue[:log_validator]
           }
           options.each do |key, _value|
             options[key] = opts.queue[key] == "true" if opts.queue.has_key? key

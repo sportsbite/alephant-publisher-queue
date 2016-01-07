@@ -53,8 +53,12 @@ module Alephant
             :log_validator       => opts.queue[:log_validator]
           }
           options.each do |key, _value|
-            options[key] = opts.queue[key] == "true" if opts.queue.has_key? key
+            options[key] = opts.queue[key] == "true" if whitelist_key(opts.queue, key)
           end
+        end
+
+        def whitelist_key(options, key)
+          options.has_key?(key) && key != :log_validator
         end
 
         def archive_cache

@@ -97,9 +97,12 @@ module Alephant
         def seq_for(id)
           Sequencer.create(
             config[:sequencer_table_name],
-            seq_key_from(id),
-            config[:sequence_id_path],
-            config[:keep_all_messages] == "true"
+            {
+              :id => seq_key_from(id),
+              :jsonpath => config[:sequence_id_path],
+              :keep_all => config[:keep_all_messages] == "true",
+              :config => config
+            }
           )
         end
 
@@ -130,7 +133,7 @@ module Alephant
         end
 
         def lookup
-          Lookup.create(config[:lookup_table_name])
+          Lookup.create(config[:lookup_table_name], config)
         end
       end
     end

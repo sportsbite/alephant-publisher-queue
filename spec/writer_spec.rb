@@ -9,7 +9,7 @@ describe Alephant::Publisher::Queue::Writer do
       :s3_bucket_id         => :s3_bucket_id,
       :s3_object_path       => :s3_object_path,
       :sequence_id_path     => "$.sequence",
-      :sequencer_table_name => :sequencer_table_name,
+      :sequencer_table_name => "sequencer_table_name",
       :view_path            => :view_path
     }
   end

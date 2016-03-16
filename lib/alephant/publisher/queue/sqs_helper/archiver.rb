@@ -46,7 +46,7 @@ module Alephant
                 "event"       => "MessageStored",
                 "messageBody" => msg_body,
                 "method"      => "#{self.class}#store"
-              ) if log_validator.(msg_body)
+              ) if log_validator.call(msg_body)
             end
           end
 

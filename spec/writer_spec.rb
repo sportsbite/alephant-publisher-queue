@@ -23,14 +23,12 @@ describe Alephant::Publisher::Queue::Writer do
         opts[:s3_object_path]
       )
 
-
     allow_any_instance_of(
       Alephant::Sequencer::SequenceTable
     ).to receive_messages(
       :create          => nil,
       :sequence_exists => nil
     )
-
 
     allow_any_instance_of(Alephant::Sequencer::Sequencer)
       .to receive_messages(

@@ -26,14 +26,18 @@ describe Alephant::Publisher::Queue::Writer do
 
     allow_any_instance_of(
       Alephant::Sequencer::SequenceTable
-    ).to receive(:create)
+    ).to receive_messages(
+      :create          => nil,
+      :sequence_exists => nil
+    )
 
 
     allow_any_instance_of(Alephant::Sequencer::Sequencer)
       .to receive_messages(
         :sequencer_id_from => nil,
         :set_last_seen     => nil,
-        :get_last_seen     => nil
+        :get_last_seen     => nil,
+        :exists?           => nil
       )
 
     allow_any_instance_of(Alephant::Lookup::LookupTable)

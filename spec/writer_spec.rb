@@ -17,7 +17,7 @@ describe Alephant::Publisher::Queue::Writer do
   before(:each) do
     AWS.stub!
 
-    allow_any_instance_of(Alephant::Cache).to receive(:initialize)
+    allow_any_instance_of(Alephant::Storage).to receive(:initialize)
       .with(
         opts[:s3_bucket_id],
         opts[:s3_object_path]
@@ -69,7 +69,7 @@ describe Alephant::Publisher::Queue::Writer do
     end
 
     it "should write the correct lookup location" do
-      allow_any_instance_of(Alephant::Cache).to receive(:put)
+      allow_any_instance_of(Alephant::Storage).to receive(:put)
 
       allow_any_instance_of(Alephant::Lookup::LookupHelper).to receive(:write)
         .with(
@@ -80,10 +80,10 @@ describe Alephant::Publisher::Queue::Writer do
         )
     end
 
-    it "should put the correct location, content to cache" do
+    it "should put the correct location, content to storage" do
       allow_any_instance_of(Alephant::Lookup::LookupHelper).to receive(:write)
 
-      allow_any_instance_of(Alephant::Cache).to receive(:put)
+      allow_any_instance_of(Alephant::Storage).to receive(:put)
         .with(expected_location, "content", "foo/bar", :msg_id=>"id")
     end
 

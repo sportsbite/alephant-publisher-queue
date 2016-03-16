@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Alephant::Publisher::Queue::SQSHelper::Archiver do
-  let (:cache)    { instance_double("Alephant::Cache", :put => nil) }
+  let (:storage)  { instance_double("Alephant::Storage", :put => nil) }
   let (:queue)    { instance_double("AWS::SQS::Queue", :url => nil) }
   let (:msg_body) {{ :Message => JSON.generate(msg_uri) }}
   let (:msg_uri)  {{ :uri => "/content/asset/newsbeat" }}
@@ -22,18 +22,18 @@ describe Alephant::Publisher::Queue::SQSHelper::Archiver do
     }
   end
 
-  let (:subject) { described_class.new(cache, opts) }
+  let (:subject) { described_class.new(storage, opts) }
 
   describe "#see" do
     let (:time_now) { DateTime.parse("Feb 24 1981") }
 
-    context "calls cache put with the correct params" do
+    context "calls storage put with the correct params" do
       before(:each) do
         allow(DateTime).to receive(:now).and_return(time_now)
       end
 
       specify do
-        expect(cache).to receive(:put).with(
+        expect(storage).to receive(:put).with(
           "archive/#{time_now.strftime('%d-%m-%Y_%H')}/id",
           message.body,
           :id        => message.id,

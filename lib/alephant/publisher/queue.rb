@@ -43,7 +43,7 @@ module Alephant
         private
 
         def archiver
-          SQSHelper::Archiver.new(archive_cache, archiver_opts)
+          SQSHelper::Archiver.new(archive_storage, archiver_opts)
         end
 
         def archiver_opts
@@ -61,8 +61,8 @@ module Alephant
           options.has_key?(key) && key != :log_validator
         end
 
-        def archive_cache
-          Cache.new(
+        def archive_storage
+          Storage.new(
             opts.writer[:s3_bucket_id],
             opts.writer[:s3_object_path]
           )

@@ -9,10 +9,10 @@ module Alephant
         class Archiver
           include Logger
 
-          attr_reader :cache, :async, :log_message_body, :log_validator
+          attr_reader :storage, :async, :log_message_body, :log_validator
 
-          def initialize(cache, opts)
-            @cache            = cache
+          def initialize(storage, opts)
+            @storage          = storage
             @async            = opts[:async_store]
             @log_message_body = opts[:log_archive_message]
             @log_validator    = opts[:log_validator] || -> _ { true }
@@ -51,14 +51,14 @@ module Alephant
           end
 
           def store_item(message)
-            cache.put(
-              cache_key(message.id),
+            storage.put(
+              storage_key(message.id),
               message.body,
               meta_for(message)
             )
           end
 
-          def cache_key(id)
+          def storage_key(id)
             "archive/#{date_key}/#{id}"
           end
 

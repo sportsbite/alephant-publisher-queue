@@ -2,7 +2,7 @@ module Alephant
   module Publisher
     module Queue
       class BaseProcessor
-        def consume(msg)
+        def consume(_msg)
           raise NotImplementedError.new(
             "You must implement the #consume(msg) method"
           )

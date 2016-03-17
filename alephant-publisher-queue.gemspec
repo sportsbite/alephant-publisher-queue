@@ -31,9 +31,9 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "aws-sdk", "~> 1.0"
   spec.add_runtime_dependency "crimp"
   spec.add_runtime_dependency "alephant-support"
-  spec.add_runtime_dependency "alephant-sequencer", "~> 2"
+  spec.add_runtime_dependency "alephant-sequencer", "~> 3"
   spec.add_runtime_dependency "alephant-cache"
   spec.add_runtime_dependency "alephant-logger", "~> 3.1"
-  spec.add_runtime_dependency "alephant-lookup", "~> 1"
+  spec.add_runtime_dependency "alephant-lookup", "~> 2"
   spec.add_runtime_dependency "alephant-renderer"
 end

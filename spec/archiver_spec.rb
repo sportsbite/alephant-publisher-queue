@@ -1,11 +1,11 @@
 require "spec_helper"
 
 describe Alephant::Publisher::Queue::SQSHelper::Archiver do
-  let (:cache)    { instance_double("Alephant::Cache", :put => nil) }
-  let (:queue)    { instance_double("AWS::SQS::Queue", :url => nil) }
-  let (:msg_body) {{ :Message => JSON.generate(msg_uri) }}
-  let (:msg_uri)  {{ :uri => "/content/asset/newsbeat" }}
-  let (:message) do
+  let(:cache)    { instance_double("Alephant::Cache", :put => nil) }
+  let(:queue)    { instance_double("AWS::SQS::Queue", :url => nil) }
+  let(:msg_body) { { :Message => JSON.generate(msg_uri) } }
+  let(:msg_uri)  { { :uri => "/content/asset/newsbeat" } }
+  let(:message) do
     instance_double(
       "AWS::SQS::ReceivedMessage",
       :id    => "id",
@@ -15,17 +15,17 @@ describe Alephant::Publisher::Queue::SQSHelper::Archiver do
     )
   end
 
-  let (:opts) do
+  let(:opts) do
     {
       :log_archive_message => true,
       :async_store         => false
     }
   end
 
-  let (:subject) { described_class.new(cache, opts) }
+  let(:subject) { described_class.new(cache, opts) }
 
   describe "#see" do
-    let (:time_now) { DateTime.parse("Feb 24 1981") }
+    let(:time_now) { DateTime.parse("Feb 24 1981") }
 
     context "calls cache put with the correct params" do
       before(:each) do

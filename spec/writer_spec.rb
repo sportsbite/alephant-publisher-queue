@@ -9,7 +9,7 @@ describe Alephant::Publisher::Queue::Writer do
       :s3_bucket_id         => :s3_bucket_id,
       :s3_object_path       => :s3_object_path,
       :sequence_id_path     => "$.sequence",
-      :sequencer_table_name => :sequencer_table_name,
+      :sequencer_table_name => "sequencer_table_name",
       :view_path            => :view_path
     }
   end
@@ -23,17 +23,19 @@ describe Alephant::Publisher::Queue::Writer do
         opts[:s3_object_path]
       )
 
-
     allow_any_instance_of(
       Alephant::Sequencer::SequenceTable
-    ).to receive(:create)
-
+    ).to receive_messages(
+      :create          => nil,
+      :sequence_exists => nil
+    )
 
     allow_any_instance_of(Alephant::Sequencer::Sequencer)
       .to receive_messages(
         :sequencer_id_from => nil,
         :set_last_seen     => nil,
-        :get_last_seen     => nil
+        :get_last_seen     => nil,
+        :exists?           => nil
       )
 
     allow_any_instance_of(Alephant::Lookup::LookupTable)

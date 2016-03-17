@@ -32,7 +32,7 @@ module Alephant
             aws_queue,
             archiver,
             opts.queue[:visibility_timeout] || VISIBILITY_TIMEOUT,
-            opts.queue[:receive_wait_time]  || RECEIVE_WAIT_TIME,
+            opts.queue[:receive_wait_time]  || RECEIVE_WAIT_TIME
           )
         end
 
@@ -58,7 +58,7 @@ module Alephant
         end
 
         def whitelist_key(options, key)
-          options.has_key?(key) && key != :log_validator
+          options.key?(key) && key != :log_validator
         end
 
         def archive_cache

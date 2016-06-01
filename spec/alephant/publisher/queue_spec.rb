@@ -2,8 +2,8 @@ require "spec_helper"
 
 describe Alephant::Publisher::Queue do
   let(:options)       { Alephant::Publisher::Queue::Options.new }
-  let(:queue)         { double("AWS::SQS::Queue", :url => nil) }
-  let(:client_double) { double("AWS::SQS", :queues => queue_double) }
+  let(:queue)         { double(AWS::SQS::Queue, :url => nil) }
+  let(:client_double) { double(AWS::SQS, :queues => queue_double) }
   let(:queue_double) do
     double("AWS::SQS::QueueCollection", :[] => queue, :url_for => nil)
   end

@@ -7,7 +7,7 @@ module Alephant
       class InvalidKeySpecifiedError < StandardError; end
 
       class Options
-        include Logger
+        include Alephant::Logger
 
         attr_reader :queue, :writer
 

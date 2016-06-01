@@ -1,5 +1,5 @@
 require "alephant/publisher/queue/writer"
-require "alephant/publisher/queue/processor/base"
+require "alephant/publisher/queue/base_processor"
 
 module Alephant
   module Publisher

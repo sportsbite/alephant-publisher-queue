@@ -7,7 +7,7 @@ module Alephant
     module Queue
       module SQSHelper
         class Archiver
-          include Logger
+          include Alephant::Logger
 
           attr_reader :cache, :async, :log_message_body, :log_validator
 

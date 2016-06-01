@@ -63,7 +63,7 @@ describe Alephant::Publisher::Queue::Writer do
     end
 
     let(:renderer) do
-      instance_double "Alephant::Renderer::Renderer"
+      instance_double(Alephant::Renderer::Renderer)
     end
 
     subject do

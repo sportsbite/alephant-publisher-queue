@@ -9,7 +9,7 @@ module Alephant
           WAIT_TIME = 5
           VISABILITY_TIMEOUT = 300
 
-          include Logger
+          include Alephant::Logger
 
           attr_reader :queue, :timeout, :wait_time, :archiver
 

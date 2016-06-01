@@ -4,8 +4,9 @@ require "alephant/publisher/queue/version"
 require "alephant/publisher/queue/options"
 require "alephant/publisher/queue/sqs_helper/queue"
 require "alephant/publisher/queue/sqs_helper/archiver"
-require "alephant/logger"
 require "alephant/publisher/queue/processor"
+require "alephant/logger"
+require "alephant/cache"
 require "json"
 
 module Alephant
@@ -17,7 +18,7 @@ module Alephant
       end
 
       class Publisher
-        include Logger
+        include Alephant::Logger
 
         VISIBILITY_TIMEOUT = 60
         RECEIVE_WAIT_TIME  = 15
@@ -28,7 +29,7 @@ module Alephant
           @opts = opts
           @processor = processor
 
-          @queue = SQSHelper::Queue.new(
+          @queue = Alephant::Publisher::Queue::SQSHelper::Queue.new(
             aws_queue,
             archiver,
             opts.queue[:visibility_timeout] || VISIBILITY_TIMEOUT,
@@ -43,7 +44,7 @@ module Alephant
         private
 
         def archiver
-          SQSHelper::Archiver.new(archive_cache, archiver_opts)
+          Alephant::Publisher::Queue::SQSHelper::Archiver.new(archive_cache, archiver_opts)
         end
 
         def archiver_opts
@@ -62,7 +63,7 @@ module Alephant
         end
 
         def archive_cache
-          Cache.new(
+          Alephant::Cache.new(
             opts.writer[:s3_bucket_id],
             opts.writer[:s3_object_path]
           )

@@ -11,7 +11,7 @@ module Alephant
   module Publisher
     module Queue
       class Writer
-        include Logger
+        include Alephant::Logger
 
         attr_reader :config, :message, :cache, :parser, :renderer
 
@@ -22,14 +22,14 @@ module Alephant
         end
 
         def cache
-          @cache ||= Cache.new(
+          @cache ||= Alephant::Cache.new(
             config[:s3_bucket_id],
             config[:s3_object_path]
           )
         end
 
         def parser
-          @parser ||= Support::Parser.new(
+          @parser ||= Alephant::Support::Parser.new(
             config[:msg_vary_id_path]
           )
         end
@@ -95,7 +95,7 @@ module Alephant
         end
 
         def seq_for(id)
-          Sequencer.create(
+          Alephant::Sequencer.create(
             config[:sequencer_table_name],
             :id       => seq_key_from(id),
             :jsonpath => config[:sequence_id_path],
@@ -109,7 +109,7 @@ module Alephant
         end
 
         def seq_id
-          @seq_id ||= Sequencer::Sequencer.sequence_id_from(
+          @seq_id ||= Alephant::Sequencer::Sequencer.sequence_id_from(
             message, config[:sequence_id_path]
           )
         end
@@ -131,7 +131,7 @@ module Alephant
         end
 
         def lookup
-          Lookup.create(config[:lookup_table_name], config)
+          Alephant::Lookup.create(config[:lookup_table_name], config)
         end
       end
     end

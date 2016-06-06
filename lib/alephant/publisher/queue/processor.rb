@@ -1,10 +1,9 @@
 require "alephant/publisher/queue/writer"
-require "alephant/publisher/queue/base_processor"
 
 module Alephant
   module Publisher
     module Queue
-      class Processor < BaseProcessor
+      class Processor
         attr_reader :writer_config
 
         def initialize(writer_config = {})

@@ -11,6 +11,7 @@ Static publishing to S3 based on SQS messages.
   - S3 bucket.
   - SQS Queue.
   - Dynamo DB table.
+  - Elasticache (if using the "revalidate" pattern)
 
 ## Migrating from [Alephant::Publisher](https://github.com/BBC-News/alephant-publisher)
 
@@ -91,7 +92,7 @@ end
 {{ content }}
 ```
 
-## Usage
+## Usage (standard setup - non-revalidate)
 
 ```ruby
 require "alephant/logger"
@@ -100,7 +101,7 @@ require "alephant/publisher/queue"
 module MyApp
   def self.run!
     loop do
-      Alephant::Publisher::Queue.create(options).run!
+      Alephant::Publisher::Queue.create(options, processor).run!
     rescue => e
       Alephant::Logger.get_logger.warn "Error: #{e.message}"
     end
@@ -149,6 +150,82 @@ S3 Path:
 ```
 S3 / bucket-id / example-s3-path / renderer-id / foo / 7e0c33c476b1089500d5f172102ec03e / 1
 ```
+
+## Usage (revalidate pattern)
+
+```ruby
+require "addressable/uri"
+require "alephant/logger"
+require "alephant/publisher/queue"
+
+module MyApp
+  class UrlGenerator
+    def self.generate(opts)
+      "http://example.com?#{url_params(opts['options'])}"
+    end
+
+    def self.url_params(params_hash)
+      uri = Addressable::URI.new
+      uri.query_values = params_hash
+      uri.query
+    end
+  end
+
+  def self.run!
+    loop do
+      Alephant::Publisher::Queue.create(options).run!
+    rescue => e
+      Alephant::Logger.get_logger.warn "Error: #{e.message}"
+    end
+  end
+
+  private
+
+  def self.processor
+    Alephant::Publisher::Queue::RevalidateProcessor.new(options, UrlGenerator)
+  end
+
+  def self.options
+    Alephant::Publisher::Queue::Options.new.tap do |opts|
+      opts.add_queue(
+        :aws_account_id => 'example',
+        :sqs_queue_name => 'test_queue'
+      )
+      opts.add_writer(
+        :keep_all_messages    => 'false',
+        :lookup_table_name    => 'lookup-dynamo-table',
+        :renderer_id          => 'renderer-id',
+        :s3_bucket_id         => 'bucket-id',
+        :s3_object_path       => 'example-s3-path',
+        :sequence_id_path     => '$.sequential_id',
+        :sequencer_table_name => 'sequence-dynamo-table',
+        :view_path            => 'path/to/views'
+      )
+      opts.add_cache(
+        :elasticache_config_endpoint => 'example'
+        :elasticache_cache_version   => '100'
+      )
+    end
+  end
+end
+```
+
+Add a message to your SQS queue, with the following format (`id`, `batch_id`, `options`):
+
+```json
+{
+  "id": "renderer_id",
+  "batch_id": "batch_id",
+  "options": {
+    "id": "foo",
+    "type": "chart"
+  }
+}
+```
+
+This will then make a HTTP GET request to the configured endpoint (via `UrlGenerator`), render and store your content.
+
+You will not ordinarily need to push messages onto SQS manually, this will be handled via the broker in real use.
 
 ## Preview Server
 

@@ -14,8 +14,8 @@ require "json"
 module Alephant
   module Publisher
     module Queue
-      def self.create(opts = {}, processor = nil)
-        processor ||= Processor.new(opts.writer)
+      def self.create(opts, processor = nil)
+        processor ||= Processor.new(opts)
         Publisher.new(opts, processor)
       end
     end

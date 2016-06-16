@@ -35,7 +35,8 @@ module Alephant
 
         CACHE_OPTS = [
           :elasticache_config_endpoint,
-          :elasticache_cache_version
+          :elasticache_cache_version,
+          :revalidate_cache_ttl
         ].freeze
 
         def initialize

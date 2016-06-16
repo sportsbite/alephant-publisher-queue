@@ -101,10 +101,10 @@ require "alephant/publisher/queue"
 module MyApp
   def self.run!
     loop do
-      Alephant::Publisher::Queue.create(options, processor).run!
-    rescue => e
-      Alephant::Logger.get_logger.warn "Error: #{e.message}"
+      Alephant::Publisher::Queue.create(options).run!
     end
+  rescue => e
+    Alephant::Logger.get_logger.error "Error: #{e.message}"
   end
 
   private
@@ -161,7 +161,7 @@ require "alephant/publisher/queue"
 module MyApp
   class UrlGenerator
     def self.generate(opts)
-      "http://example.com?#{url_params(opts['options'])}"
+      "http://example.com/?#{url_params(opts)}"
     end
 
     def self.url_params(params_hash)
@@ -173,10 +173,10 @@ module MyApp
 
   def self.run!
     loop do
-      Alephant::Publisher::Queue.create(options).run!
-    rescue => e
-      Alephant::Logger.get_logger.warn "Error: #{e.message}"
+      Alephant::Publisher::Queue.create(options, processor).run!
     end
+  rescue => e
+    Alephant::Logger.get_logger.error "Error: #{e.message}"
   end
 
   private
@@ -192,7 +192,6 @@ module MyApp
         :sqs_queue_name => 'test_queue'
       )
       opts.add_writer(
-        :keep_all_messages    => 'false',
         :lookup_table_name    => 'lookup-dynamo-table',
         :renderer_id          => 'renderer-id',
         :s3_bucket_id         => 'bucket-id',
@@ -202,8 +201,9 @@ module MyApp
         :view_path            => 'path/to/views'
       )
       opts.add_cache(
-        :elasticache_config_endpoint => 'example'
-        :elasticache_cache_version   => '100'
+        :elasticache_config_endpoint => 'example',
+        :elasticache_cache_version   => '100',
+        :revalidate_cache_ttl        => '30'
       )
     end
   end

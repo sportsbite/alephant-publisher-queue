@@ -32,8 +32,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
   let(:message) do
     instance_double(AWS::SQS::ReceivedMessage,
       :body   => JSON.generate(:id => "", :batch_id => "", :options => {}),
-      :delete => nil
-                   )
+      :delete => nil)
   end
 
   before do

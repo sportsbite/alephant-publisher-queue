@@ -69,8 +69,12 @@ module Alephant
           )
         end
 
+        def get_region
+          opts.queue[:sqs_account_region] || AWS.config.region
+        end
+
         def sqs_client
-          @sqs_client ||= AWS::SQS.new
+          @sqs_client ||= AWS::SQS.new(:region => get_region)
         end
 
         def sqs_queue_options

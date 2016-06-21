@@ -16,6 +16,7 @@ module Alephant
           :sqs_queue_name,
           :visibility_timeout,
           :aws_account_id,
+          :sqs_account_region,
           :log_archive_message,
           :log_validator,
           :async_store

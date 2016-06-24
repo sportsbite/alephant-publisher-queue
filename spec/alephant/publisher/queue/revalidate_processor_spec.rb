@@ -13,7 +13,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
 
   let(:opts) do
     instance_double(Alephant::Publisher::Queue::Options,
-      :writer => {},
+      :writer => { :sequence_id_path => "$.sequence_id" },
       :cache  => { :elasticache_config_endpoint => "wibble" })
   end
 
@@ -48,12 +48,12 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
   describe "#consume" do
     context "when there is a message passed through" do
       context "when the HTTP request are successful" do
-        let(:response_double) { double(:body => resp_body, :status => resp_status) }
-        let(:resp_body)       { JSON.generate(:id => "foo") }
-        let(:resp_status)     { 200 }
+        let(:resp_double) { double(:body => resp_body, :status => resp_status) }
+        let(:resp_body)   { JSON.generate(:id => "foo") }
+        let(:resp_status) { 200 }
 
         before do
-          allow(Faraday).to receive(:get).and_return(response_double)
+          allow(Faraday).to receive(:get).and_return(resp_double)
         end
 
         it "calls #run! on the writer with the http request result" do
@@ -113,7 +113,6 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
 
       it "does nothing" do
         expect(writer_double).to_not receive(:run!)
-        expect(message).to_not receive(:delete)
         expect(cache_double).to_not receive(:delete)
 
         subject.consume(message)

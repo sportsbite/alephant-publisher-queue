@@ -19,6 +19,7 @@ module Alephant
           return if message.nil?
 
           http_response = get(message)
+          http_response = inject_sequence_in_http_response(http_response)
           http_message  = build_http_message(message, http_response)
 
           write(http_message)
@@ -28,6 +29,17 @@ module Alephant
         end
 
         private
+
+        def writer_config
+          super.merge(:sequence_id_path => "$.sequence_id")
+        end
+
+        def inject_sequence_in_http_response(http_response)
+          response               = JSON.parse(http_response)
+          response[:sequence_id] = Time.now.to_i
+
+          JSON.generate(response)
+        end
 
         # NOTE: If you change this, you'll need to change this in
         #       `alephant-broker` also.

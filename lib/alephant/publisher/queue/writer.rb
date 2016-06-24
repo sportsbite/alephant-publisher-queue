@@ -65,7 +65,24 @@ module Alephant
         end
 
         def store(component, view, location, storage_opts = {})
+          logger.info(
+            event:        'StoreBeforeRender',
+            component:    component,
+            view:         view,
+            location:     location,
+            storage_opts: storage_opts
+          )
+
           render = view.render
+
+          logger.info(
+            event:        'StoreAfterRender',
+            component:    component,
+            view:         view,
+            location:     location,
+            storage_opts: storage_opts
+          )
+
           cache.put(location, render, view.content_type, storage_opts).tap do
             logger.info(
               "event"          => "MessageStored",
@@ -78,6 +95,7 @@ module Alephant
               "method"         => "#{self.class}#store"
             )
           end
+
           lookup.write(component, options, seq_id, location).tap do
             logger.info(
               "event"      => "LookupLocationUpdated",

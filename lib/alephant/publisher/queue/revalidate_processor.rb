@@ -3,11 +3,15 @@ require "aws-sdk"
 require "crimp"
 require "alephant/publisher/queue/processor"
 require "alephant/publisher/queue/writer"
+require "json"
+require "alephant/logger"
 
 module Alephant
   module Publisher
     module Queue
       class RevalidateProcessor < Processor
+        include Alephant::Logger
+
         attr_reader :opts, :url_generator
 
         def initialize(opts = nil, url_generator)
@@ -35,16 +39,16 @@ module Alephant
         end
 
         def inject_sequence_in_http_response(http_response)
-          response               = JSON.parse(http_response)
+          response               = ::JSON.parse(http_response)
           response[:sequence_id] = Time.now.to_i
 
-          JSON.generate(response)
+          ::JSON.generate(response)
         end
 
         # NOTE: If you change this, you'll need to change this in
         #       `alephant-broker` also.
         def inflight_message_key(message)
-          opts = JSON.parse(message.body)
+          opts = ::JSON.parse(message.body)
           version_cache_key(
             "inflight-#{opts['id']}/#{build_inflight_opts_hash(opts)}"
           )
@@ -76,8 +80,26 @@ module Alephant
         end
 
         def get(message)
-          url = url_generator.generate(JSON.parse(message.body))
+          url = url_generator.generate(::JSON.parse(message.body))
+
+          logger.info(
+            :event  => "Sending HTTP GET request",
+            :url    => url,
+            :method => "#{self.class}#get"
+          )
+
           res = Faraday.get(url)
+
+          logger.info(
+            :event  => "HTTP request complete",
+            :url    => url,
+            :status => res.status,
+            :body   => res.body,
+            :method => "#{self.class}#get"
+          )
+
+          # TODO: have something to handle the HTTP response
+
           res.body
         end
       end

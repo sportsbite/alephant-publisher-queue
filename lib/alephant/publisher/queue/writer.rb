@@ -13,12 +13,15 @@ module Alephant
       class Writer
         include Alephant::Logger
 
-        attr_reader :config, :message, :cache, :parser, :renderer
+        attr_reader :config, :message, :cache, :parser
 
         def initialize(config, message)
           @config   = config
           @message  = message
-          @renderer = Alephant::Renderer.create(config, data)
+        end
+
+        def renderer
+          @renderer ||= Alephant::Renderer.create(config, data)
         end
 
         def cache

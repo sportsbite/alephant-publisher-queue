@@ -18,7 +18,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
   end
 
   let(:writer_double) do
-    instance_double(Alephant::Publisher::Queue::Writer, :run! => nil)
+    instance_double(Alephant::Publisher::Queue::RevalidateWriter, :run! => nil)
   end
 
   let(:cache_double) do
@@ -36,7 +36,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
   end
 
   before do
-    allow(Alephant::Publisher::Queue::Writer)
+    allow(Alephant::Publisher::Queue::RevalidateWriter)
       .to receive(:new)
       .and_return(writer_double)
 
@@ -57,7 +57,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
         end
 
         it "calls #run! on the writer with the http request result" do
-          expect(Alephant::Publisher::Queue::Writer)
+          expect(Alephant::Publisher::Queue::RevalidateWriter)
             .to receive(:new)
             .with(opts.writer, anything)
             .and_return(writer_double)

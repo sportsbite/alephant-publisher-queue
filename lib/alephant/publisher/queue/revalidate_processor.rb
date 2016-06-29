@@ -2,7 +2,7 @@ require "faraday"
 require "aws-sdk"
 require "crimp"
 require "alephant/publisher/queue/processor"
-require "alephant/publisher/queue/writer"
+require "alephant/publisher/queue/revalidate_writer"
 require "json"
 require "alephant/logger"
 
@@ -22,9 +22,13 @@ module Alephant
         def consume(message)
           return if message.nil?
 
-          http_response = get(message)
-          http_response = inject_sequence_in_http_response(http_response)
-          http_message  = build_http_message(message, http_response)
+          http_response = {
+            renderer_id:   message_content(message).fetch(:id),
+            sequence_id:   Time.now.to_i,
+            http_response: get(message)
+          }
+
+          http_message  = build_http_message(message, ::JSON.generate(http_response))
 
           write(http_message)
 
@@ -38,11 +42,8 @@ module Alephant
           super.merge(:sequence_id_path => "$.sequence_id")
         end
 
-        def inject_sequence_in_http_response(http_response)
-          response               = ::JSON.parse(http_response)
-          response[:sequence_id] = Time.now.to_i
-
-          ::JSON.generate(response)
+        def write(message)
+          RevalidateWriter.new(writer_config, message).run!
         end
 
         # NOTE: If you change this, you'll need to change this in
@@ -80,7 +81,7 @@ module Alephant
         end
 
         def get(message)
-          url = url_generator.generate(::JSON.parse(message.body))
+          url = url_generator.generate(message_content(message))
 
           logger.info(
             :event  => "Sending HTTP GET request",
@@ -101,6 +102,10 @@ module Alephant
           # TODO: have something to handle the HTTP response
 
           res.body
+        end
+
+        def message_content(message)
+          ::JSON.parse(message.body, symbolize_names: true)
         end
       end
     end

@@ -24,7 +24,7 @@ module Alephant
 
           http_response = {
             renderer_id:   message_content(message).fetch(:id),
-            sequence_id:   Time.now.to_i,
+            http_options:  message_content(message),
             http_response: get(message)
           }
 

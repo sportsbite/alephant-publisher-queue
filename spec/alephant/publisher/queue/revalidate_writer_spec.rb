@@ -4,12 +4,11 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateWriter do
   subject { described_class.new(config, message) }
 
   let(:config) do
-    instance_double(Alephant::Publisher::Queue::Options,
-      writer: {
-        s3_bucket_id:      'qwerty',
-        s3_object_path:    'hello/int',
-        lookup_table_name: 'lookup_table'
-      })
+    {
+      s3_bucket_id:      'qwerty',
+      s3_object_path:    'hello/int',
+      lookup_table_name: 'lookup_table'
+    }
   end
 
   let(:message)        { double(body: JSON.generate(message_body)) }
@@ -18,7 +17,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateWriter do
   let(:message_body) do
     {
       renderer_id:   'hello_world',
-      http_options:  { id: 'hello_world', ticker: 'WMT', duration: '1_day' },
+      http_options:  { id: 'hello_world', options: { ticker: 'WMT', duration: '1_day' } },
       http_response: JSON.generate(http_response)
     }
   end
@@ -61,7 +60,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateWriter do
     it 'writes the S3 location with Alephant::Lookup' do
       expect(lookup_double)
         .to receive(:write)
-        .with(:hello_world_view, message_body[:http_options], 1, storage_location)
+        .with(:hello_world_view, message_body[:http_options][:options], 1, storage_location)
 
       subject.run!
     end

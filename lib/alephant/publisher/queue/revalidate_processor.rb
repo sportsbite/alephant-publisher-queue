@@ -28,19 +28,18 @@ module Alephant
             http_response: get(message)
           }
 
-          http_message  = build_http_message(message, ::JSON.generate(http_response))
+          http_message = build_http_message(message, ::JSON.generate(http_response))
 
           write(http_message)
 
           message.delete
+          logger.info(event: 'SQSMessageDeleted', method: "#{self.class}#consume")
+
           cache.delete(inflight_message_key(message))
+          logger.info(event: 'InFlightMessageDeleted', method: "#{self.class}#consume")
         end
 
         private
-
-        def writer_config
-          super.merge(:sequence_id_path => "$.sequence_id")
-        end
 
         def write(message)
           RevalidateWriter.new(writer_config, message).run!

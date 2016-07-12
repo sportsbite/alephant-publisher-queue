@@ -1,10 +1,10 @@
-require "faraday"
-require "aws-sdk"
-require "crimp"
-require "alephant/publisher/queue/processor"
-require "alephant/publisher/queue/revalidate_writer"
-require "json"
-require "alephant/logger"
+require 'faraday'
+require 'aws-sdk'
+require 'crimp'
+require 'alephant/publisher/queue/processor'
+require 'alephant/publisher/queue/revalidate_writer'
+require 'json'
+require 'alephant/logger'
 
 module Alephant
   module Publisher
@@ -33,10 +33,10 @@ module Alephant
           write(http_message)
 
           message.delete
-          logger.info(event: 'SQSMessageDeleted', method: "#{self.class}#consume")
+          logger.info(event: 'SQSMessageDeleted', message_content: message_content(message), method: "#{self.class}#consume")
 
           cache.delete(inflight_message_key(message))
-          logger.info(event: 'InFlightMessageDeleted', method: "#{self.class}#consume")
+          logger.info(event: 'InFlightMessageDeleted', key: inflight_message_key(message), method: "#{self.class}#consume")
         end
 
         private
@@ -55,13 +55,13 @@ module Alephant
         end
 
         def build_inflight_opts_hash(opts)
-          opts_hash = Hash[opts["options"].map { |k, v| [k.to_sym, v] }]
+          opts_hash = Hash[opts['options'].map { |k, v| [k.to_sym, v] }]
           Crimp.signature(opts_hash)
         end
 
         def version_cache_key(key)
           cache_version = opts.cache[:elasticache_cache_version]
-          [key, cache_version].compact.join("_")
+          [key, cache_version].compact.join('_')
         end
 
         def cache
@@ -83,22 +83,22 @@ module Alephant
           url = url_generator.generate(message_content(message))
 
           logger.info(
-            :event  => "Sending HTTP GET request",
-            :url    => url,
-            :method => "#{self.class}#get"
+            event:  'Sending HTTP GET request',
+            url:    url,
+            method: "#{self.class}#get"
           )
 
           res = Faraday.get(url)
 
           logger.info(
-            :event  => "HTTP request complete",
-            :url    => url,
-            :status => res.status,
-            :body   => res.body,
-            :method => "#{self.class}#get"
+            event:  'HTTP request complete',
+            url:    url,
+            status: res.status,
+            body:   res.body,
+            method: "#{self.class}#get"
           )
 
-          # TODO: have something to handle the HTTP response
+          # TODO: have something to handle the HTTP response and set the TTL if required
 
           res.body
         end

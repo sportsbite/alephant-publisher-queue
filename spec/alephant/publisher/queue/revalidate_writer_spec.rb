@@ -13,12 +13,14 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateWriter do
 
   let(:message)        { double(body: JSON.generate(message_body)) }
   let(:http_response)  { { ticker: 'WMT', val: 180.00 } }
+  let(:ttl)            { 45 }
 
   let(:message_body) do
     {
       renderer_id:   'hello_world',
       http_options:  { id: 'hello_world', options: { ticker: 'WMT', duration: '1_day' } },
-      http_response: JSON.generate(http_response)
+      http_response: JSON.generate(http_response),
+      ttl:           ttl
     }
   end
 
@@ -52,7 +54,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateWriter do
     it 'stores the HTTP content in S3 with Alephant::Cache' do
       expect(storage_double)
         .to receive(:put)
-        .with(storage_location, rendered_content, rendered_content_type, {})
+        .with(storage_location, rendered_content, rendered_content_type, ttl: ttl)
 
       subject.run!
     end

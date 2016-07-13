@@ -12,20 +12,24 @@ module Alephant
       class RevalidateProcessor < Processor
         include Alephant::Logger
 
-        attr_reader :opts, :url_generator
+        attr_reader :opts, :url_generator, :http_response_processor
 
-        def initialize(opts = nil, url_generator)
-          @opts          = opts
-          @url_generator = url_generator
+        def initialize(opts = nil, url_generator, http_response_processor)
+          @opts                    = opts
+          @url_generator           = url_generator
+          @http_response_processor = http_response_processor
         end
 
         def consume(message)
           return if message.nil?
 
+          msg_body = message_content(message)
+
           http_response = {
-            renderer_id:   message_content(message).fetch(:id),
-            http_options:  message_content(message),
-            http_response: get(message)
+            renderer_id:   msg_body.fetch(:id),
+            http_options:  msg_body,
+            http_response: get(message),
+            ttl:           http_response_processor.ttl(msg_body)
           }
 
           http_message = build_http_message(message, ::JSON.generate(http_response))
@@ -80,7 +84,8 @@ module Alephant
         end
 
         def get(message)
-          url = url_generator.generate(message_content(message))
+          msg_content = message_content(message)
+          url         = url_generator.generate(msg_content)
 
           logger.info(
             event:  'Sending HTTP GET request',
@@ -98,9 +103,7 @@ module Alephant
             method: "#{self.class}#get"
           )
 
-          # TODO: have something to handle the HTTP response and set the TTL if required
-
-          res.body
+          http_response_processor.process(msg_content, res.status, res.body)
         end
 
         def message_content(message)

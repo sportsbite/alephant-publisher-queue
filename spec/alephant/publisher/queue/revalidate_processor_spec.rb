@@ -7,9 +7,20 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
     end
   end
 
-  subject { described_class.new(opts, url_generator) }
+  class TestHttpResponseProcessor
+    def self.process(_opts, _response_status, response_body)
+      response_body
+    end
 
-  let(:url_generator) { TestUrlGenerator }
+    def self.ttl(_opts)
+      nil
+    end
+  end
+
+  subject { described_class.new(opts, url_generator, http_response_processor) }
+
+  let(:url_generator)           { TestUrlGenerator }
+  let(:http_response_processor) { TestHttpResponseProcessor }
 
   let(:opts) do
     instance_double(Alephant::Publisher::Queue::Options,
@@ -17,23 +28,12 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
       cache:  { elasticache_config_endpoint: 'wibble' })
   end
 
-  let(:writer_double) do
-    instance_double(Alephant::Publisher::Queue::RevalidateWriter, run!: nil)
-  end
+  let(:writer_double)      { instance_double(Alephant::Publisher::Queue::RevalidateWriter, run!: nil) }
+  let(:cache_double)       { instance_double(Dalli::Client, delete: nil) }
+  let(:elasticache_double) { instance_double(Dalli::ElastiCache, client: cache_double) }
 
-  let(:cache_double) do
-    instance_double(Dalli::Client, delete: nil)
-  end
-
-  let(:elasticache_double) do
-    instance_double(Dalli::ElastiCache, client: cache_double)
-  end
-
-  let(:message) do
-    instance_double(AWS::SQS::ReceivedMessage,
-      body:   JSON.generate(id: '', batch_id: '', options: {}),
-      delete: nil)
-  end
+  let(:message)      { instance_double(AWS::SQS::ReceivedMessage, body: JSON.generate(message_body), delete: nil) }
+  let(:message_body) { { id: '', batch_id: '', options: {} } }
 
   before do
     allow(Alephant::Publisher::Queue::RevalidateWriter)
@@ -63,6 +63,24 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
             .and_return(writer_double)
 
           expect(writer_double).to receive(:run!)
+
+          subject.consume(message)
+        end
+
+        it 'passes the response to the http_response_processor' do
+          expect(http_response_processor)
+            .to receive(:process)
+            .with(message_body, resp_status, resp_body)
+            .and_call_original
+
+          subject.consume(message)
+        end
+
+        it "calls the 'ttl' method on the http_response_processor" do
+          expect(http_response_processor)
+            .to receive(:ttl)
+            .with(message_body)
+            .and_call_original
 
           subject.consume(message)
         end

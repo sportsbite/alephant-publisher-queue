@@ -72,7 +72,7 @@ module Alephant
         end
 
         def storage_opts
-          {}
+          { ttl: message_content[:ttl] }
         end
 
         def config

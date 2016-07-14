@@ -32,6 +32,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "rake"
   spec.add_runtime_dependency "aws-sdk", "~> 1.0"
   spec.add_runtime_dependency "crimp"
+  spec.add_runtime_dependency "faraday"
+  spec.add_runtime_dependency "dalli-elasticache"
   spec.add_runtime_dependency "alephant-support"
   spec.add_runtime_dependency "alephant-sequencer", "~> 3"
   spec.add_runtime_dependency "alephant-cache"

@@ -1,9 +1,24 @@
+sudo: false
+cache: bundler
 language: ruby
+
+# Ruby build matrix
 rvm:
-  - "jruby"
-notifications:
-  email:
-    recipients:
-      - kenoir@gmail.com
-    on_failure: change
-    on_success: never
+  - 2.0
+  - 2.1
+  - 2.2
+  - 2.3.0
+  - 2.3.1
+  - jruby
+
+# Environment variables
+env:
+  - RUBYOPT="-W0"
+
+# Ensure we don't build for *every* commit (doesn't apply to PR builds)
+branches:
+  only:
+  - master
+
+script:
+  - bundle exec rspec --format documentation

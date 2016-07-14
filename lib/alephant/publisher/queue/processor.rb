@@ -1,24 +1,26 @@
 require "alephant/publisher/queue/writer"
-require "alephant/publisher/queue/base_processor"
 
 module Alephant
   module Publisher
     module Queue
-      class Processor < BaseProcessor
-        attr_reader :writer_config
+      class Processor
+        attr_reader :opts
 
-        def initialize(writer_config = {})
-          @writer_config = writer_config
+        def initialize(opts = nil)
+          @opts = opts
         end
 
         def consume(msg)
-          unless msg.nil?
-            write msg
-            msg.delete
-          end
+          return if msg.nil?
+          write(msg)
+          msg.delete
         end
 
         private
+
+        def writer_config
+          opts ? opts.writer : {}
+        end
 
         def write(msg)
           Writer.new(writer_config, msg).run!

@@ -160,14 +160,46 @@ require "alephant/publisher/queue"
 
 module MyApp
   class UrlGenerator
-    def self.generate(opts)
-      "http://example.com/?#{url_params(opts)}"
-    end
+    class << self
+      # This function is called to generate the URL to be requested as
+      # part of the rendering process. The return must be a URL as a string.
+      def generate(opts)
+        "http://example.com/?#{url_params(opts)}"
+      end
 
-    def self.url_params(params_hash)
-      uri = Addressable::URI.new
-      uri.query_values = params_hash
-      uri.query
+      private
+
+      def url_params(params_hash)
+        uri = Addressable::URI.new
+        uri.query_values = params_hash
+        uri.query
+      end
+    end
+  end
+
+  class HttpResponseProcessor
+    class << self
+      # This function is called upon a successful HTTP response.
+      #
+      # Use it to modify or process the response of your HTTP request
+      # as you please, but there is one rule - the return value MUST
+      # be a JSON object.
+      def process(opts, status, body)
+        # our response is already JSON, pass it through
+        body
+      end
+
+      # If you wish to vary your revalidate TTL on a per-endpoint (or
+      # other logic) basis, you can do it here - simply return an Integer
+      # value.
+      #
+      # If nil is returned the 'revalidate_cache_ttl' config setting on the
+      # broker will be used as the default TTL, otherwise the default in
+      # 'alephant-broker' will be used.
+      def self.ttl(opts)
+        # 30s revalidate time for all
+        30
+      end
     end
   end
 
@@ -182,7 +214,7 @@ module MyApp
   private
 
   def self.processor
-    Alephant::Publisher::Queue::RevalidateProcessor.new(options, UrlGenerator)
+    Alephant::Publisher::Queue::RevalidateProcessor.new(options, UrlGenerator, HttpResponseProcessor)
   end
 
   def self.options
@@ -193,11 +225,8 @@ module MyApp
       )
       opts.add_writer(
         :lookup_table_name    => 'lookup-dynamo-table',
-        :renderer_id          => 'renderer-id',
         :s3_bucket_id         => 'bucket-id',
         :s3_object_path       => 'example-s3-path',
-        :sequence_id_path     => '$.sequential_id',
-        :sequencer_table_name => 'sequence-dynamo-table',
         :view_path            => 'path/to/views'
       )
       opts.add_cache(
@@ -215,7 +244,7 @@ Add a message to your SQS queue, with the following format (`id`, `batch_id`, `o
 ```json
 {
   "id": "renderer_id",
-  "batch_id": "batch_id",
+  "batch_id": null,
   "options": {
     "id": "foo",
     "type": "chart"
@@ -223,7 +252,7 @@ Add a message to your SQS queue, with the following format (`id`, `batch_id`, `o
 }
 ```
 
-This will then make a HTTP GET request to the configured endpoint (via `UrlGenerator`), render and store your content.
+This will then make a HTTP GET request to the configured endpoint (via `UrlGenerator`), process the response (via `HttpResponseProcessor`), render and store your content.
 
 You will not ordinarily need to push messages onto SQS manually, this will be handled via the broker in real use.
 

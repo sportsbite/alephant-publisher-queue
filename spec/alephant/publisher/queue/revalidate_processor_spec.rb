@@ -24,7 +24,7 @@ RSpec.describe Alephant::Publisher::Queue::RevalidateProcessor do
 
   let(:opts) do
     instance_double(Alephant::Publisher::Queue::Options,
-      writer: { sequence_id_path: '$.sequence_id' },
+      writer: {},
       cache:  { elasticache_config_endpoint: 'wibble' })
   end
 

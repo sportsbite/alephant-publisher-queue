@@ -38,15 +38,22 @@ module Alephant
         end
 
         def run!
-          seq_for(config[:renderer_id]).validate(message, &process_components)
+          if component_records_write_successful?
+            seq_for(config[:renderer_id]).validate(message) do
+              # block needed in sequencer. Need to make optional with `block.given?`
+              # https://github.com/BBC-News/alephant-sequencer/blob/master/lib/alephant/sequencer/sequencer.rb#L41
+            end
+          end
         end
 
         protected
 
         def process_components
-          Proc.new do
-            views.each { |component, view| write(component, view) }
-          end
+          views.map { |component, view| write(component, view) }
+        end
+
+        def component_records_write_successful?
+          process_components.all? { |response| response.respond_to?(:successful) && response.successful? }
         end
 
         def write(component, view)

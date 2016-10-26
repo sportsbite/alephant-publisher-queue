@@ -53,7 +53,7 @@ module Alephant
         end
 
         def component_records_write_successful?
-          process_components.all? { |response| response.respond_to?(:successful) && response.successful? }
+          process_components.all? { |response| response.respond_to?(:successful?) && response.successful? }
         end
 
         def write(component, view)
